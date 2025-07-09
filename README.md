@@ -151,13 +151,50 @@ mvn clean package
 
 ## 📝 Geliştirme Notları
 
+### 🔐 JWT Authentication Sistemi
+
+Bu proje JWT (JSON Web Token) tabanlı authentication sistemi ile geliştirilmiştir:
+
+#### Authentication Endpoints
+- `POST /api/auth/register` - Yeni kullanıcı kaydı
+- `POST /api/auth/login` - Kullanıcı girişi (JWT token döner)
+- `POST /api/auth/refresh` - Token yenileme
+- `GET /api/auth/me` - Giriş yapmış kullanıcı bilgileri
+
+#### Token Kullanımı
+```bash
+# Login yaparak token alın
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password123"}'
+
+# Token ile API'ye erişim
+curl -X GET http://localhost:8080/api/talep \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### Flutter Entegrasyonu
+```dart
+// HTTP interceptor ile token yönetimi
+class ApiInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    final token = SharedPreferences.getInstance().getString('access_token');
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+    handler.next(options);
+  }
+}
+```
+
 ### Gelecek Özellikler
+- [x] JWT Authentication/Authorization ✅
 - [ ] File upload işlevselliği
 - [ ] Email bildirimleri
 - [ ] Push notification
 - [ ] Advanced search
 - [ ] Dashboard analytics
-- [ ] User authentication/authorization
 - [ ] Rate limiting
 - [ ] Caching
 
